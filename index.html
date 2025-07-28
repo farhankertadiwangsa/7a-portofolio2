@@ -1,0 +1,2272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelas 7A - SMP Darul Islam</title>
+    <!-- Library Eksternal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        /* Variabel CSS untuk tema biru putih */
+        :root {
+            --primary-dark: #0a1f44;
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #38bdf8;
+            --light: #f0f9ff;
+            --white: #ffffff;
+            --gray: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --glow: rgba(56, 189, 248, 0.4);
+            --chat-bg: #e3f2fd;
+            --success: #10b981;
+            --danger: #ef4444;
+            --video-call: #8b5cf6;
+        }
+
+        /* Reset dan Dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* Efek Partikel Background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            top: 0;
+            left: 0;
+        }
+
+        /* Container Utama */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 20px 0;
+            transition: all 0.3s ease;
+            background: rgba(10, 31, 68, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        header.scrolled {
+            padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--white);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .hero h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            display: block;
+            position: relative;
+        }
+
+        .hero h1 .welcome {
+            opacity: 0;
+            animation: fadeInUp 1s forwards 0.5s;
+        }
+
+        .hero h1 .kelas {
+            opacity: 0;
+            animation: fadeInUp 1s forwards 1s;
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero h1 .kelas::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, white, transparent);
+            animation: flicker 1.5s infinite;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            opacity: 0;
+            animation: fadeInUp 1s forwards 1.5s;
+        }
+
+        .scroll-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 15px 40px;
+            color: var(--white);
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 1s forwards 2s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .scroll-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px var(--glow);
+        }
+
+        .scroll-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .scroll-btn:hover::before {
+            left: 100%;
+        }
+
+        /* About Section */
+        .about {
+            background: var(--light);
+            color: var(--primary-dark);
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 60px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .about-content {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .about-visual {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
+            position: relative;
+        }
+
+        .three-js-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Struktur Kelas Section */
+        .roles {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .flip-card {
+            perspective: 1000px;
+            height: 350px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .flip-card-front {
+            background: var(--white);
+            color: var(--primary-dark);
+        }
+
+        .flip-card-back {
+            background: var(--primary-light);
+            color: var(--white);
+            transform: rotateY(180deg);
+        }
+
+        .role-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-light);
+        }
+
+        .flip-card-back .role-icon {
+            color: var(--white);
+        }
+
+        .role-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .role-person {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .flip-card-back .role-person {
+            color: var(--white);
+        }
+
+        .role-desc {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Jadwal Section */
+        .schedule {
+            background: var(--light);
+            color: var(--primary-dark);
+        }
+
+        .schedule-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .schedule-image {
+            max-width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease;
+            position: relative;
+            background: var(--gray);
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .schedule-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .schedule-image:hover img {
+            transform: scale(1.02);
+        }
+
+        .schedule-placeholder {
+            padding: 50px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .schedule-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-light);
+        }
+
+        /* Kontak Section */
+        .contact {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px var(--glow);
+            border-color: var(--accent);
+        }
+
+        .contact-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .contact-card.disabled .contact-btn {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .contact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .contact-role {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .contact-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--white);
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .contact-btn:hover {
+            background: var(--accent);
+        }
+
+        .contact-btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+
+        /* Chat Section */
+        .chat {
+            background: var(--chat-bg);
+            padding: 80px 0;
+        }
+
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--light);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            background: var(--primary-light);
+            color: var(--white);
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            max-width: 80%;
+            align-self: flex-start;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .user {
+            font-weight: 600;
+        }
+
+        .time {
+            opacity: 0.8;
+            margin-left: 10px;
+        }
+
+        .message-text {
+            word-wrap: break-word;
+        }
+
+        .chat-input-container {
+            display: flex;
+            padding: 15px;
+            background: var(--white);
+            border-top: 1px solid var(--gray);
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--gray);
+            border-radius: 30px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .send-btn {
+            background: var(--primary-light);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--white);
+            color: var(--primary-dark);
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-logo {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .copyright {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .creator {
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        /* Animasi Kustom */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        /* Responsif */
+        @media (max-width: 992px) {
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .about-visual {
+                width: 100%;
+            }
+            
+            .roles-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(10, 31, 68, 0.95);
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+                clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+                transition: all 0.5s ease;
+            }
+            
+            .nav-links.active {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            }
+            
+            .nav-links li {
+                margin: 15px 0;
+            }
+            
+            .flip-card {
+                height: 300px;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero {
+                height: 90vh;
+            }
+            
+            .section-title {
+                margin-bottom: 40px;
+            }
+            
+            .roles-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .flip-card {
+                height: 280px;
+            }
+            
+            .chat-input-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .send-btn {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+
+        /* Efek Dekoratif */
+        .wave-divider {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+        }
+
+        .wave-divider svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 50px;
+        }
+
+        .wave-divider .shape-fill {
+            fill: var(--light);
+        }
+        
+        /* === STYLE BARU UNTUK FITUR AUDIO CALL === */
+        
+        /* Tombol call baru */
+        .call-btn {
+            background: var(--success);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .call-btn:hover {
+            background: #059669;
+        }
+        
+        .call-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Popup panggilan masuk */
+        .call-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 31, 68, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .call-popup.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .call-popup-content {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .call-popup.active .call-popup-content {
+            transform: translateY(0);
+        }
+        
+        .call-popup-icon {
+            font-size: 4rem;
+            color: var(--success);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        .call-popup-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        .call-popup-text {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .call-popup-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .call-popup-btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .call-popup-btn.join {
+            background: var(--success);
+            color: var(--white);
+        }
+        
+        .call-popup-btn.decline {
+            background: var(--danger);
+            color: var(--white);
+        }
+        
+        .call-popup-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Bar status panggilan */
+        .call-status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--primary);
+            color: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1500;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .call-status-bar.active {
+            transform: translateY(0);
+        }
+        
+        .call-status-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .call-status-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+        }
+        
+        .call-status-text {
+            font-size: 1.1rem;
+        }
+        
+        .call-status-participants {
+            font-weight: 600;
+        }
+        
+        .call-status-btn {
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .call-status-btn:hover {
+            background: #dc2626;
+        }
+        
+        .call-status-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Gelombang suara */
+        .audio-wave {
+            display: flex;
+            align-items: center;
+            height: 30px;
+            margin-left: 15px;
+        }
+        
+        .wave-bar {
+            width: 4px;
+            height: 15px;
+            background: var(--white);
+            margin: 0 2px;
+            border-radius: 2px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+        
+        .wave-bar:nth-child(1) { animation-delay: 0s; height: 10px; }
+        .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 15px; }
+        .wave-bar:nth-child(3) { animation-delay: 0.4s; height: 20px; }
+        .wave-bar:nth-child(4) { animation-delay: 0.6s; height: 15px; }
+        .wave-bar:nth-child(5) { animation-delay: 0.8s; height: 10px; }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes wave {
+            0% { transform: scaleY(1); }
+            50% { transform: scaleY(0.5); }
+            100% { transform: scaleY(1); }
+        }
+        
+        /* === STYLE BARU UNTUK VIDEO CALL === */
+        .video-call-btn {
+            background: var(--video-call);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-call-btn:hover {
+            background: #7c3aed;
+        }
+        
+        .video-call-btn i {
+            margin-right: 8px;
+        }
+        
+        #video-call-actions {
+            text-align: center;
+            margin-top: 15px;
+            padding: 0 15px 15px;
+        }
+        
+        #exit-video-call-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10001;
+            padding: 12px 25px;
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+        }
+        
+        #exit-video-call-btn i {
+            margin-right: 8px;
+        }
+        
+        #metered-iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 10000;
+            display: none;
+        }
+        
+        body.video-call-active {
+            overflow: hidden;
+        }
+        
+        body.video-call-active > *:not(#metered-iframe):not(#exit-video-call-btn) {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Particles -->
+    <div id="particles-js"></div>
+    
+    <!-- Bar status panggilan (awalnya tersembunyi) -->
+    <div class="call-status-bar" id="call-status-bar">
+        <div class="call-status-info">
+            <div class="call-status-icon">
+                <i class="fas fa-phone-alt"></i>
+                <div class="audio-wave" id="audio-wave">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+            </div>
+            <div class="call-status-text">
+                Sedang Menelpon dengan: 
+                <span class="call-status-participants" id="call-participants"></span>
+            </div>
+        </div>
+        <button class="call-status-btn" id="end-call-btn">
+            <i class="fas fa-phone-slash"></i> Akhiri Panggilan
+        </button>
+    </div>
+    
+    <!-- Popup panggilan masuk -->
+    <div class="call-popup" id="call-popup">
+        <div class="call-popup-content">
+            <div class="call-popup-icon">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <h2 class="call-popup-title" id="call-popup-title">Panggilan Masuk</h2>
+            <p class="call-popup-text" id="call-popup-text">sedang menelpon. Gabung?</p>
+            <div class="call-popup-buttons">
+                <button class="call-popup-btn join" id="join-call-btn">
+                    <i class="fas fa-phone-alt"></i> Gabung
+                </button>
+                <button class="call-popup-btn decline" id="decline-call-btn">
+                    <i class="fas fa-times"></i> Tolak
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Elemen audio untuk suara remote -->
+    <audio id="remoteAudio" autoplay playsinline style="display: none;"></audio>
+    
+    <!-- Header -->
+    <header id="header">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                Kelas 7A
+            </a>
+            <div class="mobile-toggle" id="mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#home" class="active">Beranda</a></li>
+                <li><a href="#about">Tentang</a></li>
+                <li><a href="#roles">Struktur</a></li>
+                <li><a href="#schedule">Jadwal</a></li>
+                <li><a href="#contact">Kontak</a></li>
+                <li><a href="#chat">Chat</a></li>
+            </ul>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-image" style="margin-bottom: 30px;">
+                <img src="foto1.png" alt="Foto Utama Kelas" style="max-width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            </div>
+
+            <h1>
+                <span class="welcome">Welcome to SMP Darul Islam</span>
+                <span class="kelas">Kelas 7A</span>
+            </h1>
+            <p>Website resmi kelas 7A SMP Darul Islam untuk menampilkan kegiatan, jadwal, dan informasi penting kelas.</p>
+            <a href="#about" class="scroll-btn">Scroll to Explore</a>
+        </div>
+        
+        <!-- Wave Divider -->
+        <div class="wave-divider">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">Welcome to Portfolio Kelas 7A</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Website ini ialah bentuk kekreatifan anak kelas 7A agar kelas 7A dapat menampilkan potensi penuhnya.</p>
+                    <p>Kami adalah komunitas belajar yang bersemangat, berkomitmen untuk mencapai prestasi akademik dan pengembangan karakter. Dengan semangat kebersamaan, kami siap menghadapi tantangan dan menciptakan kenangan indah selama masa SMP.</p>
+                    <p>Di kelas 7A, kami percaya bahwa setiap siswa memiliki potensi unik yang perlu dikembangkan. Kami berusaha menciptakan lingkungan yang mendukung di mana setiap anggota kelas dapat tumbuh dan berkembang.</p>
+                </div>
+                <div class="about-visual">
+                    <div class="three-js-container" id="shape-container"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Struktur Kelas Section -->
+    <section class="roles" id="roles">
+        <div class="container">
+            <h2 class="section-title">Struktur Kelas 7A</h2>
+            <div class="roles-grid">
+                <!-- Wali Kelas -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="wali.png" alt="Wali Kelas" style="
+                                width: 100px;
+                                height: 100px;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                margin-bottom: 15px;
+                                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                            ">
+                            <i class="fas fa-chalkboard-teacher role-icon"></i>
+                            <h3 class="role-name">Wali Kelas</h3>
+                            <p class="role-person">Dewita Windiartra</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <i class="fas fa-chalkboard-teacher role-icon"></i>
+                            <h3 class="role-name">Wali Kelas</h3>
+                            <p class="role-person">Dewita Windiartra</p>
+                            <p class="role-desc">Membimbing siswa dan mengatur kegiatan kelas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ketua Kelas -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="ketua.png" alt="Ketua Kelas" style="
+                                width: 100px;
+                                height: 100px;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                margin-bottom: 15px;
+                                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                            ">
+                            <i class="fas fa-crown role-icon"></i>
+                            <h3 class="role-name">Ketua Kelas</h3>
+                            <p class="role-person">Adli</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <i class="fas fa-crown role-icon"></i>
+                            <h3 class="role-name">Ketua Kelas</h3>
+                            <p class="role-person">Adli</p>
+                            <p class="role-desc">Mengkoordinasi siswa dan menyampaikan informasi</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Wakil Ketua -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="wakil.png" alt="Wakil Ketua" style="
+                                width: 100px;
+                                height: 100px;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                margin-bottom: 15px;
+                                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                            ">
+                            <i class="fas fa-user-tie role-icon"></i>
+                            <h3 class="role-name">Wakil Ketua</h3>
+                            <p class="role-person">Ramdan</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <i class="fas fa-user-tie role-icon"></i>
+                            <h3 class="role-name">Wakil Ketua</h3>
+                            <p class="role-person">Ramdan</p>
+                            <p class="role-desc">Membantu ketua kelas saat ketua berhalangan</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bendahara -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="bendahara.png" alt="Bendahara" style="
+                                width: 100px;
+                                height: 100px;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                margin-bottom: 15px;
+                                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                            ">
+                            <i class="fas fa-money-bill-wave role-icon"></i>
+                            <h3 class="role-name">Bendahara</h3>
+                            <p class="role-person">Natasya</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <i class="fas fa-money-bill-wave role-icon"></i>
+                            <h3 class="role-name">Bendahara</h3>
+                            <p class="role-person">Natasya</p>
+                            <p class="role-desc">Mencatat dan mengelola keuangan kelas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sekretaris -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="sekretaris.png" alt="Sekretaris" style="
+                                width: 100px;
+                                height: 100px;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                margin-bottom: 15px;
+                                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                            ">
+                            <i class="fas fa-clipboard-list role-icon"></i>
+                            <h3 class="role-name">Sekretaris</h3>
+                            <p class="role-person">Melissa</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <i class="fas fa-clipboard-list role-icon"></i>
+                            <h3 class="role-name">Sekretaris</h3>
+                            <p class="role-person">Melissa</p>
+                            <p class="role-desc">Mencatat notulensi rapat dan dokumentasi kegiatan</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Keamanan -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="keamanan.png" alt="Keamanan" style="
+                                width: 100px;
+                                height: 100px;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                margin-bottom: 15px;
+                                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                            ">
+                            <i class="fas fa-shield-alt role-icon"></i>
+                            <h3 class="role-name">Keamanan</h3>
+                            <p class="role-person">Zahir</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <i class="fas fa-shield-alt role-icon"></i>
+                            <h3 class="role-name">Keamanan</h3>
+                            <p class="role-person">Zahir</p>
+                            <p class="role-desc">Menjaga ketertiban dan keamanan kelas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Kebersihan -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="kebersihan.png" alt="Kebersihan" style="
+                                width: 100px;
+                                height: 100px;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                margin-bottom: 15px;
+                                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                            ">
+                            <i class="fas fa-broom role-icon"></i>
+                            <h3 class="role-name">Kebersihan</h3>
+                            <p class="role-person">Farhan</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <i class="fas fa-broom role-icon"></i>
+                            <h3 class="role-name">Kebersihan</h3>
+                            <p class="role-person">Farhan</p>
+                            <p class="role-desc">Mengatur jadwal piket dan menjaga kebersihan lingkungan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Jadwal Section -->
+    <section class="schedule" id="schedule">
+        <div class="container">
+            <h2 class="section-title">Jadwal Pelajaran</h2>
+            <div class="schedule-container">
+                <div class="schedule-image">
+                    <img src="foto2.png" alt="Jadwal Pelajaran" style="width: 100%; border-radius: 15px; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wave Divider -->
+        <div class="wave-divider">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </section>
+    
+    <!-- Kontak Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">Kontak WhatsApp</h2>
+            <div class="contact-grid">
+                <!-- Wali Kelas -->
+                <div class="contact-card">
+                    <i class="fab fa-whatsapp contact-icon"></i>
+                    <div class="contact-role">Wali Kelas</div>
+                    <div class="contact-name">Dewita Windiartra</div>
+                    <a href="https://wa.me/62895631181488" class="contact-btn" id="contact-btn-1">
+                        Hubungi via WhatsApp
+                    </a>
+                </div>
+                
+                <!-- Ketua Kelas -->
+                <div class="contact-card">
+                    <i class="fab fa-whatsapp contact-icon"></i>
+                    <div class="contact-role">Ketua Kelas</div>
+                    <div class="contact-name">Adli</div>
+                    <a href="https://wa.me/6285608412887" class="contact-btn" id="contact-btn-2">
+                        Hubungi via WhatsApp
+                    </a>
+                </div>
+                
+                <!-- Wakil Ketua -->
+                <div class="contact-card disabled">
+                    <i class="fab fa-whatsapp contact-icon"></i>
+                    <div class="contact-role">Wakil Ketua</div>
+                    <div class="contact-name">Ramdan</div>
+                    <button class="contact-btn">
+                        Tidak Aktif
+                    </button>
+                </div>
+                
+                <!-- Sekretaris -->
+                <div class="contact-card">
+                    <i class="fab fa-whatsapp contact-icon"></i>
+                    <div class="contact-role">Sekretaris</div>
+                    <div class="contact-name">Melissa</div>
+                    <a href="https://wa.me/6285732180279" class="contact-btn" id="contact-btn-4">
+                        Hubungi via WhatsApp
+                    </a>
+                </div>
+                
+                <!-- Bendahara -->
+                <div class="contact-card">
+                    <i class="fab fa-whatsapp contact-icon"></i>
+                    <div class="contact-role">Bendahara</div>
+                    <div class="contact-name">Natasya</div>
+                    <a href="https://wa.me/6282132346098" class="contact-btn" id="contact-btn-5">
+                        Hubungi via WhatsApp
+                    </a>
+                </div>
+                
+                <!-- Keamanan -->
+                <div class="contact-card">
+                    <i class="fab fa-whatsapp contact-icon"></i>
+                    <div class="contact-role">Keamanan</div>
+                    <div class="contact-name">Zahir</div>
+                    <a href="https://wa.me/6282338180590" class="contact-btn" id="contact-btn-6">
+                        Hubungi via WhatsApp
+                    </a>
+                </div>
+                
+                <!-- Kebersihan -->
+                <div class="contact-card">
+                    <i class="fab fa-whatsapp contact-icon"></i>
+                    <div class="contact-role">Kebersihan</div>
+                    <div class="contact-name">Farhan</div>
+                    <a href="https://wa.me/6282336479077" class="contact-btn" id="contact-btn-7">
+                        Hubungi via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Chat Section -->
+    <section class="chat" id="chat">
+        <div class="container">
+            <h2 class="section-title" style="color: var(--primary-dark);">Realtime Chat</h2>
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3>Chat Kelas 7A</h3>
+                </div>
+                <div id="chat-box" class="chat-box"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="messageInput" class="chat-input" placeholder="Ketik pesan...">
+                    <button id="call-btn" class="call-btn">
+                        <i class="fas fa-phone-alt"></i> Call
+                    </button>
+                    <button id="sendBtn" class="send-btn">Kirim</button>
+                </div>
+                <!-- BEGIN: Tombol Video Call -->
+                <div id="video-call-actions">
+                    <button id="join-video-call-btn" class="video-call-btn">
+                        <i class="fas fa-video"></i> Join Video Call
+                    </button>
+                </div>
+                <!-- END: Tombol Video Call -->
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-graduation-cap"></i> Kelas 7A
+            </div>
+            <div class="copyright">
+                © 2025 SMP Darul Islam Kelas 7A
+            </div>
+            <div class="creator">
+                Created by: Farhan Kertadiwangsa
+            </div>
+        </div>
+    </footer>
+    
+    <!-- BEGIN: Elemen Video Call -->
+    <button id="exit-video-call-btn" class="video-call-btn">
+        <i class="fas fa-times"></i> Keluar Video Call
+    </button>
+    
+    <iframe
+        id="metered-iframe"
+        src="https://kelas.metered.live/0nq2-za6s2"
+        allow="camera; microphone; fullscreen; display-capture"
+    ></iframe>
+    <!-- END: Elemen Video Call -->
+
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWpBfeZjvnqsp6MQmNlRzogBwWJQ2DXfA",
+            authDomain: "kelas-f9fb2.firebaseapp.com",
+            databaseURL: "https://kelas-f9fb2-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "kelas-f9fb2",
+            storageBucket: "kelas-f9fb2.firebasestorage.app",
+            messagingSenderId: "729627489867",
+            appId: "1:729627489867:web:5466f045f3c81d40513fce",
+            measurementId: "G-SH7YX2T342"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const chatRef = db.ref('chats');
+        const callsRef = db.ref('calls/active_call');
+
+        // === VARIABEL GLOBAL UNTUK AUDIO CALL ===
+        let currentUser = null;
+        let currentCallId = null;
+        let isCallActive = false;
+        let isInCall = false;
+        let peerConnections = {};
+        let localStream = null;
+        let callParticipants = {};
+        let remoteStream = null;
+        
+        // Fungsi untuk mendapatkan/membuat user ID
+        function getOrCreateUserId() {
+            // Cek apakah sudah ada di localStorage
+            let userId = localStorage.getItem('userId');
+            if (!userId) {
+                // Buat ID baru jika belum ada
+                userId = 'Anonimus_' + Math.floor(Math.random() * 900 + 100);
+                localStorage.setItem('userId', userId);
+            }
+            return userId;
+        }
+        
+        // Fungsi untuk memulai panggilan
+        async function startCall() {
+            try {
+                // Dapatkan user ID
+                currentUser = getOrCreateUserId();
+                
+                // Dapatkan akses ke mikrofon
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                localStream = stream;
+                
+                // Update UI
+                document.getElementById('call-status-bar').classList.add('active');
+                document.getElementById('call-participants').textContent = currentUser;
+                isInCall = true;
+                
+                // Inisialisasi remote stream dan audio element
+                remoteStream = new MediaStream();
+                document.getElementById('remoteAudio').srcObject = remoteStream;
+                
+                // Simpan status panggilan di Firebase
+                const callData = {
+                    status: "calling",
+                    caller: currentUser,
+                    participants: {
+                        [currentUser]: true
+                    },
+                    timestamp: Date.now()
+                };
+                
+                // Buat referensi baru untuk panggilan
+                const newCallRef = callsRef.push();
+                newCallRef.set(callData);
+                currentCallId = newCallRef.key;
+                
+                // Pantau perubahan pada panggilan
+                newCallRef.on('value', handleCallUpdate);
+                
+                // Tambahkan event listener untuk kandidat ICE
+                newCallRef.child('signals').on('child_added', handleSignal);
+                
+                console.log('Panggilan dimulai dengan ID:', currentCallId);
+            } catch (error) {
+                console.error('Gagal memulai panggilan:', error);
+                alert('Tidak dapat mengakses mikrofon. Pastikan Anda memberikan izin.');
+            }
+        }
+        
+        // Fungsi untuk bergabung ke panggilan
+        async function joinCall(callId) {
+            try {
+                // Dapatkan user ID
+                currentUser = getOrCreateUserId();
+                
+                // Dapatkan akses ke mikrofon
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                localStream = stream;
+                
+                // Update UI
+                document.getElementById('call-status-bar').classList.add('active');
+                isInCall = true;
+                
+                // Inisialisasi remote stream dan audio element
+                remoteStream = new MediaStream();
+                document.getElementById('remoteAudio').srcObject = remoteStream;
+                
+                // Dapatkan referensi ke panggilan yang ada
+                const callRef = db.ref('calls/active_call/' + callId);
+                currentCallId = callId;
+                
+                // Tambahkan diri ke daftar peserta
+                callRef.child('participants').child(currentUser).set(true);
+                
+                // Pantau perubahan pada panggilan
+                callRef.on('value', handleCallUpdate);
+                
+                // Tambahkan event listener untuk kandidat ICE
+                callRef.child('signals').on('child_added', handleSignal);
+                
+                console.log('Bergabung dengan panggilan:', callId);
+            } catch (error) {
+                console.error('Gagal bergabung dengan panggilan:', error);
+                alert('Tidak dapat mengakses mikrofon. Pastikan Anda memberikan izin.');
+            }
+        }
+        
+        // Fungsi untuk menangani pembaruan panggilan
+        function handleCallUpdate(snapshot) {
+            const callData = snapshot.val();
+            
+            if (!callData) {
+                // Panggilan telah berakhir
+                endCall();
+                return;
+            }
+            
+            // Update daftar peserta
+            callParticipants = callData.participants || {};
+            
+            // Update UI dengan daftar peserta
+            const participantNames = Object.keys(callParticipants);
+            document.getElementById('call-participants').textContent = participantNames.join(', ');
+            
+            // Jika ini pemanggil, kirim penawaran ke peserta baru
+            if (callData.caller === currentUser) {
+                Object.keys(callParticipants).forEach(userId => {
+                    if (userId !== currentUser && !peerConnections[userId]) {
+                        createPeerConnection(userId, true);
+                    }
+                });
+            }
+        }
+        
+        // Fungsi untuk menangani sinyal WebRTC
+        function handleSignal(signalSnapshot) {
+            const signal = signalSnapshot.val();
+            
+            // Abaikan sinyal dari diri sendiri
+            if (signal.sender === currentUser) return;
+            
+            const userId = signal.sender;
+            
+            if (!peerConnections[userId]) {
+                createPeerConnection(userId, false);
+            }
+            
+            const pc = peerConnections[userId];
+            
+            if (signal.type === 'offer') {
+                pc.setRemoteDescription(new RTCSessionDescription(signal.data))
+                    .then(() => pc.createAnswer())
+                    .then(answer => pc.setLocalDescription(answer))
+                    .then(() => {
+                        sendSignal(userId, {
+                            type: 'answer',
+                            data: pc.localDescription
+                        });
+                    })
+                    .catch(console.error);
+            } else if (signal.type === 'answer') {
+                pc.setRemoteDescription(new RTCSessionDescription(signal.data))
+                    .catch(console.error);
+            } else if (signal.type === 'candidate') {
+                pc.addIceCandidate(new RTCIceCandidate(signal.data))
+                    .catch(console.error);
+            }
+        }
+        
+        // Fungsi untuk membuat koneksi peer
+        function createPeerConnection(userId, isOfferer) {
+            const pc = new RTCPeerConnection({
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' }
+                ]
+            });
+            
+            peerConnections[userId] = pc;
+            
+            // Tambahkan stream audio lokal
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    pc.addTrack(track, localStream);
+                });
+            }
+            
+            // Tangani kandidat ICE
+            pc.onicecandidate = event => {
+                if (event.candidate) {
+                    sendSignal(userId, {
+                        type: 'candidate',
+                        data: event.candidate
+                    });
+                }
+            };
+            
+            // Tangani stream jarak jauh
+            pc.ontrack = event => {
+                // Tambahkan track ke remote stream
+                if (remoteStream) {
+                    event.streams[0].getTracks().forEach(track => {
+                        remoteStream.addTrack(track);
+                    });
+                }
+            };
+            
+            // Buat penawaran jika kita adalah penawaran
+            if (isOfferer) {
+                pc.createOffer()
+                    .then(offer => pc.setLocalDescription(offer))
+                    .then(() => {
+                        sendSignal(userId, {
+                            type: 'offer',
+                            data: pc.localDescription
+                        });
+                    })
+                    .catch(console.error);
+            }
+        }
+        
+        // Fungsi untuk mengirim sinyal
+        function sendSignal(targetUserId, signal) {
+            signal.sender = currentUser;
+            db.ref(`calls/active_call/${currentCallId}/signals`).push().set(signal);
+        }
+        
+        // Fungsi untuk mengakhiri panggilan
+        function endCall() {
+            // Hentikan semua track media
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            
+            if (remoteStream) {
+                remoteStream.getTracks().forEach(track => track.stop());
+                remoteStream = null;
+            }
+            
+            // Tutup semua koneksi peer
+            Object.values(peerConnections).forEach(pc => pc.close());
+            peerConnections = {};
+            
+            // Hapus data panggilan dari Firebase jika kita adalah pemanggil
+            if (currentCallId) {
+                db.ref(`calls/active_call/${currentCallId}`).remove();
+            }
+            
+            // Reset state
+            currentCallId = null;
+            isInCall = false;
+            callParticipants = {};
+            
+            // Update UI
+            document.getElementById('call-status-bar').classList.remove('active');
+            document.getElementById('call-popup').classList.remove('active');
+            
+            // Reset audio element
+            document.getElementById('remoteAudio').srcObject = null;
+            
+            console.log('Panggilan diakhiri');
+        }
+        
+        // Fungsi untuk menampilkan popup panggilan masuk
+        function showIncomingCall(callerName) {
+            document.getElementById('call-popup-title').textContent = 'Panggilan Masuk';
+            document.getElementById('call-popup-text').textContent = `${callerName} sedang menelpon. Gabung?`;
+            document.getElementById('call-popup').classList.add('active');
+            
+            // Tambahkan suara dering
+            const ringtone = new Audio('data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV');
+            ringtone.loop = true;
+            ringtone.play();
+            
+            // Simpan ringtone untuk dihentikan nanti
+            window.currentRingtone = ringtone;
+        }
+        
+        // Fungsi untuk menyembunyikan popup panggilan masuk
+        function hideIncomingCall() {
+            document.getElementById('call-popup').classList.remove('active');
+            
+            // Hentikan suara dering jika ada
+            if (window.currentRingtone) {
+                window.currentRingtone.pause();
+                window.currentRingtone = null;
+            }
+        }
+        
+        // Fungsi untuk mengirim pesan
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                const user = `Anonimus_${Math.floor(Math.random() * 900) + 100}`;
+                const timestamp = Date.now();
+                
+                chatRef.push({
+                    user,
+                    text: message,
+                    timestamp
+                });
+                
+                messageInput.value = '';
+            }
+        }
+
+        // Fungsi untuk menampilkan pesan
+        function displayMessage(message) {
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            
+            const time = new Date(message.timestamp);
+            const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageElement.innerHTML = `
+                <div class="message-header">
+                    <span class="user">${message.user}</span>
+                    <span class="time">${timeString}</span>
+                </div>
+                <div class="message-text">${message.text}</div>
+            `;
+            
+            chatBox.appendChild(messageElement);
+            
+            // Scroll ke bawah
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Mendengarkan pesan baru dari Firebase
+        chatRef.on('child_added', (snapshot) => {
+            const message = snapshot.val();
+            displayMessage(message);
+        });
+
+        // === EVENT LISTENER UNTUK FITUR BARU ===
+        
+        // Event listener untuk tombol call
+        document.getElementById('call-btn').addEventListener('click', startCall);
+        
+        // Event listener untuk tombol kirim
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        
+        // Event listener untuk tombol gabung di popup
+        document.getElementById('join-call-btn').addEventListener('click', () => {
+            hideIncomingCall();
+            joinCall(currentCallId);
+        });
+        
+        // Event listener untuk tombol tolak di popup
+        document.getElementById('decline-call-btn').addEventListener('click', hideIncomingCall);
+        
+        // Event listener untuk tombol akhiri panggilan
+        document.getElementById('end-call-btn').addEventListener('click', endCall);
+        
+        // Event listener untuk perubahan pada path panggilan aktif
+        callsRef.on('value', (snapshot) => {
+            const activeCall = snapshot.val();
+            
+            if (!activeCall) {
+                // Tidak ada panggilan aktif
+                isCallActive = false;
+                return;
+            }
+            
+            const callId = Object.keys(activeCall)[0];
+            const callData = activeCall[callId];
+            
+            if (!callData) return;
+            
+            // Periksa apakah panggilan ini berbeda dari yang sedang diikuti
+            if (currentCallId !== callId) {
+                // Periksa apakah kita sudah dalam panggilan
+                if (isInCall) return;
+                
+                // Periksa apakah kita sudah menjadi peserta
+                const userId = getOrCreateUserId();
+                if (callData.participants && callData.participants[userId]) return;
+                
+                // Tampilkan popup panggilan masuk
+                currentCallId = callId;
+                showIncomingCall(callData.caller);
+            }
+        });
+
+        // Inisialisasi GSAP dengan ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Animasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animasi untuk setiap section
+            gsap.utils.toArray('section').forEach(section => {
+                gsap.from(section, {
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top bottom-=100',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 1
+                });
+            });
+            
+            // Animasi khusus untuk judul section
+            gsap.utils.toArray('.section-title').forEach(title => {
+                gsap.from(title, {
+                    scrollTrigger: {
+                        trigger: title,
+                        start: 'top bottom-=150',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 0,
+                    y: 30,
+                    duration: 0.8
+                });
+            });
+            
+            // Animasi untuk flip cards
+            gsap.utils.toArray('.flip-card').forEach((card, i) => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top bottom-=100',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 0.8,
+                    delay: i * 0.1
+                });
+            });
+            
+            // Animasi untuk contact cards
+            gsap.utils.toArray('.contact-card').forEach((card, i) => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top bottom-=100',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 0.8,
+                    delay: i * 0.1
+                });
+            });
+            
+            // Animasi untuk chat section
+            gsap.utils.toArray('.chat-container').forEach((container, i) => {
+                gsap.from(container, {
+                    scrollTrigger: {
+                        trigger: container,
+                        start: 'top bottom-=100',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 0.8
+                });
+            });
+            
+            // Efek ripple untuk tombol WhatsApp
+            const buttons = document.querySelectorAll('.contact-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Skip jika tombol disabled
+                    if(this.classList.contains('disabled') || this.parentElement.classList.contains('disabled')) return;
+                    
+                    // Efek ripple
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+            
+            // Fungsi untuk flip card
+            window.flipCard = function(card) {
+                card.classList.toggle('flipped');
+            };
+            
+            // Navigasi mobile toggle
+            const mobileToggle = document.getElementById('mobile-toggle');
+            const navLinks = document.getElementById('nav-links');
+            
+            mobileToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+            });
+            
+            // Tutup menu mobile saat link diklik
+            const navItems = document.querySelectorAll('.nav-links a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navLinks.classList.remove('active');
+                });
+            });
+            
+            // Efek scroll header
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+            
+            // Inisialisasi Three.js untuk background partikel
+            initParticles();
+            
+            // Inisialisasi Three.js untuk shape di about section
+            initShape();
+            
+            // BEGIN: Video Call Event Listeners
+            document.getElementById('join-video-call-btn').addEventListener('click', function() {
+                // Aktifkan mode video call
+                document.body.classList.add('video-call-active');
+                document.getElementById('metered-iframe').style.display = 'block';
+                document.getElementById('exit-video-call-btn').style.display = 'flex';
+            });
+            
+            document.getElementById('exit-video-call-btn').addEventListener('click', function() {
+                // Nonaktifkan mode video call
+                document.body.classList.remove('video-call-active');
+                document.getElementById('metered-iframe').style.display = 'none';
+                this.style.display = 'none';
+            });
+            // END: Video Call Event Listeners
+        });
+        
+        // Fungsi untuk partikel background
+        function initParticles() {
+            const container = document.getElementById('particles-js');
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Membuat partikel
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 2000;
+            
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorArray = new Float32Array(particlesCount * 3);
+            
+            for(let i = 0; i < particlesCount * 3; i++) {
+                // Posisi
+                posArray[i] = (Math.random() - 0.5) * 20;
+                
+                // Warna (biru dan putih)
+                if(i % 3 === 0) {
+                    colorArray[i] = Math.random() * 0.5 + 0.5; // R: 0.5-1.0
+                    colorArray[i+1] = Math.random() * 0.5 + 0.5; // G: 0.5-1.0
+                    colorArray[i+2] = Math.random() + 0.5; // B: 0.5-1.5 (lebih biru)
+                } else {
+                    colorArray[i] = Math.random() * 0.2 + 0.8; // Putih dengan sedikit variasi
+                    colorArray[i+1] = Math.random() * 0.2 + 0.8;
+                    colorArray[i+2] = Math.random() * 0.2 + 0.8;
+                }
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+            
+            // Material partikel
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            // Animasi
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Animasikan partikel
+                const positions = particlesMesh.geometry.attributes.position.array;
+                for(let i = 0; i < particlesCount * 3; i += 3) {
+                    positions[i + 1] += 0.001; // Gerak ke atas
+                    
+                    // Reset partikel jika sudah terlalu tinggi
+                    if(positions[i + 1] > 10) {
+                        positions[i + 1] = -10;
+                    }
+                }
+                particlesMesh.geometry.attributes.position.needsUpdate = true;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle resize
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // Fungsi untuk shape 3D di about section
+        function initShape() {
+            const container = document.getElementById('shape-container');
+            
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f9ff);
+            
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+            
+            // Membuat shape love
+            const heartShape = new THREE.Shape();
+            heartShape.moveTo(0, 0);
+            heartShape.bezierCurveTo(2, 2, 4, 4, 0, 6);
+            heartShape.bezierCurveTo(-4, 4, -2, 2, 0, 0);
+            
+            const extrudeSettings = {
+                steps: 2,
+                depth: 0.5,
+                bevelEnabled: true,
+                bevelThickness: 0.1,
+                bevelSize: 0.1,
+                bevelSegments: 3
+            };
+            
+            const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x3b82f6,
+                emissive: 0x072f5f,
+                specular: 0xffffff,
+                shininess: 100,
+                transparent: true,
+                opacity: 0.9,
+                wireframe: false
+            });
+            
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.rotation.x = Math.PI;
+            scene.add(mesh);
+            
+            // Pencahayaan
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Animasi
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                mesh.rotation.y += 0.005;
+                mesh.rotation.x += 0.002;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle resize
+            window.addEventListener('resize', function() {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+    </script>
+</body>
+</html>
